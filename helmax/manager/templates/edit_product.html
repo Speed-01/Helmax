@@ -1,0 +1,135 @@
+{% block content %}
+<!-- Modal Background Overlay -->
+<div id="variantModal" 
+     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    
+    <!-- Modal Content -->
+    <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
+        <!-- Modal Header -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800">Variants</h2>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6">
+            <form id="variantForm" method="POST" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Variant Grid -->
+                <div class="grid grid-cols-4 gap-4">
+                    <!-- Headers -->
+                    <div class="font-medium text-gray-700">Size</div>
+                    <div class="font-medium text-gray-700">QTY</div>
+                    <div class="font-medium text-gray-700">Price</div>
+                    <div class="font-medium text-gray-700">Discount Price</div>
+
+                    <!-- S Size Row -->
+                    <div class="flex items-center justify-center">
+                        <div class="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center font-medium text-gray-700">
+                            S
+                        </div>
+                    </div>
+                    <input type="number" name="qty_s" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="price_s" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="discount_s" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+
+                    <!-- M Size Row -->
+                    <div class="flex items-center justify-center">
+                        <div class="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center font-medium text-gray-700">
+                            M
+                        </div>
+                    </div>
+                    <input type="number" name="qty_m" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="price_m" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="discount_m" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+
+                    <!-- L Size Row -->
+                    <div class="flex items-center justify-center">
+                        <div class="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center font-medium text-gray-700">
+                            L
+                        </div>
+                    </div>
+                    <input type="number" name="qty_l" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="price_l" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="discount_l" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+
+                    <!-- XL Size Row -->
+                    <div class="flex items-center justify-center">
+                        <div class="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center font-medium text-gray-700">
+                            XL
+                        </div>
+                    </div>
+                    <input type="number" name="qty_xl" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="price_xl" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                    <input type="number" name="discount_xl" value="00" min="0"
+                           class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-helmax-yellow focus:border-transparent">
+                </div>
+
+                <!-- Save Button -->
+                <div class="flex justify-center mt-6">
+                    <button type="submit"
+                            class="bg-helmax-yellow text-black px-8 py-2 rounded-lg hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/Hide Modal
+    function toggleModal() {
+        const modal = document.getElementById('variantModal');
+        modal.classList.toggle('hidden');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('variantModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            toggleModal();
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('variantForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch('{% url "update_variants" product.id %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+            
+            if (response.ok) {
+                toggleModal();
+                // Optionally refresh the page or show success message
+                window.location.reload();
+            } else {
+                throw new Error('Failed to update variants');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            // Show error message to user
+            alert('Failed to update variants. Please try again.');
+        }
+    });
+</script>
+{% endblock %}
+

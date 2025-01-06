@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#ffbe00',
+                        darkGray: '#1e1e1e',
+                        lightGray: '#aaa',
+                    },
+                },
+            },
+        };
+    </script>
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-black text-white min-h-screen">
+    <!-- Sidebar -->
+    <div class="flex h-full">
+        <aside class="bg-darkGray w-64 h-screen fixed top-0 left-0 flex flex-col lg:block hidden">
+            <div class="py-4 px-6 border-b border-gray-700">
+                <h1 class="text-2xl font-bold text-brandYellow">Admin Dashboard</h1>
+            </div>
+            <nav class="flex-1 py-6 px-4 space-y-2">
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Dashboard</a>
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Products</a>
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Customers</a>
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Orders</a>
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Coupons</a>
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Reports</a>
+                <a href="#" class="block py-2 px-4 rounded-lg hover:bg-gray-700 text-white">Logout</a>
+            </nav>
+        </aside>
+
+        <!-- Add mobile menu button -->
+        <button 
+            class="lg:hidden fixed top-4 left-4 z-50 text-white"
+            aria-label="Toggle menu"
+            onclick="document.querySelector('aside').classList.toggle('hidden')"
+        >
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="ml-64 w-full p-6">
+            <header class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-brandYellow">Customers</h2>
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        placeholder="Search..." 
+                        aria-label="Search customers"
+                        class="p-2 pl-10 w-64 bg-darkGray border border-gray-700 text-white rounded-lg focus:ring-2 focus:ring-brandYellow focus:outline-none"
+                    >
+                    <span class="absolute top-2 left-3 text-gray-500">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </div>
+            </header>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full border border-gray-700 text-sm text-left">
+                    <thead class="bg-brandYellow text-black">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">Name</th>
+                            <th scope="col" class="px-6 py-3">Email</th>
+                            {% comment %} <th scope="col" class="px-6 py-3">Mobile</th>
+                            <th scope="col" class="px-6 py-3">Address</th> {% endcomment %}
+                            <th scope="col" class="px-6 py-3">Status</th>
+                            <th scope="col" class="px-6 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in data %}
+                        <tr class="border-b border-gray-700">
+                            <td class="px-6 py-3">{{ user.id }}</td>
+                            <td class="px-6 py-3">{{ user.username }}</td>
+                            <td class="px-6 py-3">{{ user.email }}</td>
+                            {% comment %} <td class="px-6 py-3">{{ user.mobile }}</td> {% endcomment %}
+                            {% comment %} <td class="px-6 py-3">{{ user.address }}</td> {% endcomment %}
+                            <td class="px-6 py-3">
+                                <span class="py-1 px-2 rounded text-sm font-medium 
+                                    {% if user.is_active %}
+                                        bg-green-600 text-white
+                                    {% else %}
+                                        bg-red-600 text-white
+                                    {% endif %}
+                                ">
+                                    {% if user.is_active %}Active{% else %}Blocked{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <form method="POST" 
+                                {% comment %} action="{% url 'toggle_user_status' user.id %}"  {% endcomment %}
+                                class="block_user_form">
+                                    {% csrf_token %}
+                                    <button 
+                                        type="submit"
+                                        class="py-1 px-3 rounded-lg text-white relative
+                                            {% if user.is_active %}
+                                                bg-red-600 hover:bg-red-700
+                                            {% else %}
+                                                bg-green-600 hover:bg-green-700
+                                            {% endif %}
+                                        "
+                                        onclick="this.classList.add('opacity-50'); this.innerHTML += '<span class=\'ml-2\'><i class=\'fas fa-spinner fa-spin\'></i></span>'"
+                                    >
+                                        {% if user.is_active %}Block{% else %}Unblock{% endif %}
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-6" role="navigation" aria-label="Pagination">
+                <button class="px-4 py-2 mx-1 text-white bg-gray-700 rounded hover:bg-gray-600">Previous</button>
+                <button class="px-4 py-2 mx-1 text-black bg-brandYellow rounded hover:bg-yellow-500">1</button>
+                <button class="px-4 py-2 mx-1 text-white bg-gray-700 rounded hover:bg-gray-600">Next</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

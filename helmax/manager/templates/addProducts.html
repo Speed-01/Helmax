@@ -1,0 +1,99 @@
+
+{% extends 'base01.html' %}
+
+{% block content %}
+<div class="p-6">
+    <h1 class="text-2xl font-bold mb-6">Add New Product</h1>
+
+    <form action="{% url 'addProducts' %}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Product Name -->
+        <div>
+            <label for="name" class="block text-sm font-medium">Product Name</label>
+            <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                class="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white" 
+                placeholder="Enter product name" 
+                required>
+        </div>
+
+        <!-- Brand -->
+
+        <div>
+            <label for="brand" class="block text-sm font-medium">Brand</label>
+            <select 
+                id="brand" 
+                name="brand" 
+                class="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white">
+                {% for brand in brands %}
+                <option value="{{ brand.id }}">{{ brand.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Color -->
+        {% comment %} <div>
+            <label for="color" class="block text-sm font-medium">Color</label>
+            <input 
+                type="text" 
+                id="color" 
+                name="color" 
+                class="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white" 
+                placeholder="Enter color">
+        </div> {% endcomment %}
+
+        
+        <!-- Category -->
+        <div>
+            <label for="category" class="block text-sm font-medium">Category</label>
+            <select 
+                id="category" 
+                name="category" 
+                class="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white">
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label for="description" class="block text-sm font-medium">Description</label>
+            <textarea 
+                id="description" 
+                name="description" 
+                rows="5" 
+                class="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white" 
+                placeholder="Enter product description"></textarea>
+        </div>
+        
+
+        <!-- Product Image Upload -->
+        {% comment %} <div>
+            <label for="images" class="block text-sm font-medium">Product Images</label>
+            <div class="border border-gray-600 bg-gray-800 rounded-lg p-4 flex justify-center items-center">
+                <input 
+                    type="file" 
+                    id="images" 
+                    name="images" 
+                    accept="image/*" 
+                    class="text-white cursor-pointer" 
+                    multiple>
+            </div>
+            <p class="text-gray-400 text-sm mt-2">You can upload multiple images.</p>
+        </div> {% endcomment %}
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+            <button 
+                type="submit" 
+                class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg">
+                Add Product
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Product Management{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Products</h1>
+    <input type="text" placeholder="Search..." oninput="searchProducts(this.value)">
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="product-list">
+        {% for product in products %}
+        <tr>
+            <td><img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 50px; height: 50px;"></td>
+            <td>{{ product.name }}</td>
+            <td>₹{{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            <td>{{ product.category }}</td>
+            <td>
+                <button class="action-btn edit" onclick="editProduct('{{ product.id }}')">Edit</button>
+                <button class="action-btn remove" onclick="removeProduct('{{ product.id }}')">Remove</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<button class="add-product" onclick="addNewProduct()">Add New Product</button>
+
+<script>
+    function searchProducts(query) {
+        // Implement search functionality (AJAX if needed)
+    }
+
+    function editProduct(productId) {
+        window.location.href = `/products/edit/${productId}`;
+    }
+
+    function removeProduct(productId) {
+        if (confirm('Are you sure you want to remove this product?')) {
+            fetch(`/products/remove/${productId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => location.reload());
+        }
+    }
+
+    function addNewProduct() {
+        window.location.href = '/products/add';
+    }
+</script>
+{% endblock %}

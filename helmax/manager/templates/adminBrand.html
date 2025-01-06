@@ -1,0 +1,197 @@
+{% extends 'base01.html' %}
+
+{% block content %}
+<div class="p-6">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-semibold text-white">Brand</h1>
+    <div class="flex space-x-4">
+      <input 
+        type="text" 
+        placeholder="Search" 
+        class="px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-gray-300 focus:ring-yellow-500 focus:outline-none"
+      >
+      <button 
+        onclick="showAddBrandModal()" 
+        class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg"
+      >
+        Add new Brand
+      </button>
+    </div>
+  </div>
+
+  <div class="overflow-hidden border border-gray-600 rounded-lg">
+    <table class="min-w-full bg-black text-left text-sm text-gray-300">
+      <thead class="bg-gray-800">
+        <tr>
+          <th class="px-6 py-4 font-medium">Sl.No</th>
+          <th class="px-6 py-4 font-medium">Name</th>
+          <th class="px-6 py-4 font-medium">Status</th>
+          <th class="px-6 py-4 font-medium">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for brand in brands %}
+        <tr class="border-b border-gray-600 hover:bg-gray-800" id="brand-row-{{ brand.id }}">
+          <td class="px-6 py-4">{{ forloop.counter }}</td>
+          <td class="px-6 py-4">{{ brand.name }}</td>
+          <td class="px-6 py-4" id="status-{{ brand.id }}">
+            {% if brand.is_active %}
+              Active
+            {% else %}
+              Blocked
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 space-x-2">
+            <button 
+              onclick="showEditBrandModal({{ brand.id }}, '{{ brand.name }}')" 
+              class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg"
+            >
+              Edit
+            </button>
+            <button 
+              onclick="toggleBrandStatus({{ brand.id }})" 
+              class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg"
+              id="toggle-btn-{{ brand.id }}">
+              {% if brand.is_active %}
+                Block
+              {% else %}
+                Unblock
+              {% endif %}
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center py-4 text-gray-400">No brands available</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Brand Modal -->
+<div id="addBrandModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+  <div class="bg-gray-900 p-6 rounded-lg w-96">
+    <h2 class="text-lg font-bold text-white mb-4">Add New Brand</h2>
+    <form method="POST" action="{% url 'add_brand' %}">
+      {% csrf_token %}
+      <input 
+        type="text" 
+        name="brand_name" 
+        placeholder="Brand Name" 
+        class="w-full px-4 py-2 mb-4 rounded-lg bg-gray-800 border border-gray-600 text-gray-300"
+      >
+      <div class="flex justify-end space-x-2">
+        <button 
+          type="button" 
+          onclick="hideAddBrandModal()" 
+          class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit" 
+          class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg"
+        >
+          Add
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Brand Modal -->
+<div id="editBrandModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+  <div class="bg-gray-900 p-6 rounded-lg w-96">
+      <h2 class="text-lg font-bold text-white mb-4">Edit Brand</h2>
+      <form id="editBrandForm" method="POST" action="edit_category">
+          {% csrf_token %}
+          <input 
+              type="text" 
+              name="brand_name" 
+              id="editBrandName" 
+              placeholder="Brand Name" 
+              class="w-full px-4 py-2 mb-4 rounded-lg bg-gray-800 border border-gray-600 text-gray-300"
+          >
+          <div class="flex justify-end space-x-2">
+              <button 
+                  type="button" 
+                  onclick="hideEditBrandModal()" 
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
+              >
+                  Cancel
+              </button>
+              <button 
+                  type="submit" 
+                  class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg"
+              >
+                  Save
+              </button>
+          </div>
+      </form>
+  </div>
+</div>
+
+
+<script>
+  function showAddBrandModal() {
+    document.getElementById('addBrandModal').classList.remove('hidden');
+}
+
+function hideAddBrandModal() {
+    document.getElementById('addBrandModal').classList.add('hidden');
+}
+
+function showEditBrandModal(id, name) {
+    const modal = document.getElementById('editBrandModal'); // Ensure the modal ID matches
+    if (!modal) {
+        console.error("Edit brand modal element not found.");
+        return;
+    }
+    const input = document.getElementById('editBrandName'); // Ensure the input ID matches
+    const form = document.getElementById('editBrandForm'); // Ensure the form ID matches
+    if (input) input.value = name;
+    if (form) form.action = `/admin_brands/edit/${id}/`; // Update the form's action
+    modal.classList.remove('hidden');
+}
+
+function hideEditBrandModal() {
+    const modal = document.getElementById('editBrandModal'); // Ensure the modal ID matches
+    if (modal) modal.classList.add('hidden');
+}
+
+function toggleBrandStatus(brandId) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/admin_brands/toggle/${brandId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const statusElement = document.getElementById(`status-${brandId}`);
+                const buttonElement = document.getElementById(`toggle-btn-${brandId}`);
+                if (data.status === 'active') {
+                    statusElement.textContent = 'Active';
+                    buttonElement.textContent = 'Block';
+                } else {
+                    statusElement.textContent = 'Blocked';
+                    buttonElement.textContent = 'Unblock';
+                }
+            } else {
+                alert('Failed to toggle status. Please try again.');
+            }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+}
+
+</script>
+{% endblock %}

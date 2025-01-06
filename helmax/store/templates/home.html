@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="pt-20 relative h-[600px] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/50 to-purple-900/50"></div>
+    <img src="{% static 'images/helmet_hero_img.png' %}" alt="Hero Helmet" class="absolute inset-0 w-full h-full object-cover">
+    
+    <div class="relative z-10 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">Featured Collections</h1>
+        <p class="text-xl opacity-80">Welcome to Our Store</p>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-16 bg-black">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {% for product in featured_products %}
+            <div class="group">
+                <div class="bg-neutral-900 rounded-lg p-4 transition-transform hover:scale-105">
+                    <img src="{% static product.image %}" alt="{{ product.name }}" class="w-full h-auto">
+                    <div class="mt-4">
+                        <h3 class="text-sm font-medium">{{ product.name }}</h3>
+                        <p class="text-primary mt-1">${{ product.price }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Black Friday Banner -->
+<section class="bg-orange-500 py-8">
+    <div class="container mx-auto px-4 text-center">
+      {% comment %} <img src="{% static 'images/baner.pngn' %}" alt="Hero Helmet" class="absolute inset-0 w-full h-full object-cover"> {% endcomment %}
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">BLACK FRIDAY</h2>
+        <p class="text-xl mb-6">Special Offer - 50% OFF</p>
+        <button class="bg-white text-orange-500 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+            SHOP NOW
+        </button>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="py-16 bg-black">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">CATEGORIES</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {% for category in categories %}
+            <div class="text-center">
+                <div class="aspect-square rounded-full bg-neutral-900 mb-4 flex items-center justify-center hover:bg-neutral-800 transition-colors">
+                    <img src="{% static category.image %}" alt="{{ category.name }}" class="w-3/4 h-3/4 object-contain">
+                </div>
+                <h3 class="font-medium">{{ category.name }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Always Ahead Banner -->
+<section class="relative h-[400px] flex items-center justify-center">
+    <img src="{% static 'images/helmet_hero_img.png' %}" alt="Lifestyle" class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative z-10 text-center">
+        <h2 class="text-4xl font-bold mb-4">ALWAYS AHEAD</h2>
+        <button class="border-2 border-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-black transition-colors">
+            Discover More
+        </button>
+        <div class="absolute top-4 right-4 z-20">
+            <a href="{% url 'logout' %}" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                Logout
+            </a>
+        </div>
+        
+    </div>
+</section>
+{% endblock %}
