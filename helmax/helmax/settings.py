@@ -2,13 +2,10 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# LOGIN_URL = 'adminLogin'  # Set this to your admin login URL name
-# LOGIN_REDIRECT_URL = 'adminDashboard'  # Set this to your dashboard URL name
 
 GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')
 if not GOOGLE_OAUTH_CLIENT_ID:
@@ -16,6 +13,20 @@ if not GOOGLE_OAUTH_CLIENT_ID:
         'GOOGLE_OAUTH_CLIENT_ID is missing.' 
         'Have you put it in a file at core/.env ?'
     )
+
+CSRF_TRUSTED_ORIGINS = ['https://accounts.google.com', 'http://localhost:8000']
+SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID')
+
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# LOGIN_URL = 'adminLogin'  # Set this to your admin login URL name
+# LOGIN_REDIRECT_URL = 'adminDashboard'  # Set this to your dashboard URL name
+
+
 
 # We need these lines below to allow the Google sign in popup to work.
 SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
@@ -66,6 +77,10 @@ INSTALLED_APPS = [
 
     'cloudinary',
     'cloudinary_storage',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google', 
 ]
 
 MIDDLEWARE = [
@@ -76,6 +91,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = "helmax.urls"
@@ -135,8 +151,40 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',  # Default authentication backend
+    'allauth.account.auth_backends.AuthenticationBackend',  # AllAuth backend
 ]
+
+# # Redirect URLs
+# LOGIN_REDIRECT_URL = '/store/home/'
+# LOGOUT_REDIRECT_URL = '/store/login/'
+
+# # AllAuth settings
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+# # Optional: Disable email confirmation (useful for testing)
+# ACCOUNT_CONFIRM_EMAIL_ON_GET = False
+# SOCIALACCOUNT_QUERY_EMAIL = True
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE': [
+#             'profile',  # Request profile information
+#             'email',    # Request email address
+#         ],
+#         'APP': {
+#             'client_id': config('GOOGLE_CLIENT_ID'),
+#             'secret': config('GOOGLE_CLIENT_SECRET'),
+#         },
+#         'AUTH_PARAMS': {
+#             'access_type': 'online',  # Request online access
+#         }
+#     }
+# }
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -181,3 +229,6 @@ cloudinary.config(
 )
 
 AUTH_USER_MODEL = 'manager.User'
+LOGIN_REDIRECT_URL = '/store/home/'
+LOGOUT_REDIRECT_URL = '/store/login/'
+

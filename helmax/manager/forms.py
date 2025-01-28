@@ -61,9 +61,10 @@ class OTPVerificationForm(forms.Form):
 
     def clean_otp(self):
         otp = self.cleaned_data['otp']
-        if not otp.isdigit():
-            raise forms.ValidationError("OTP must contain only digits.")
+        if not otp.isdigit() or len(otp) != 6:
+            raise forms.ValidationError("OTP must be a 6-digit number.")
         return otp
+
 
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField(label='Email', max_length=254)
@@ -81,9 +82,6 @@ class SetPasswordForm(forms.Form):
             if password1 != password2:
                 raise forms.ValidationError("Passwords don't match")
         return cleaned_data
-
-
-
 
 
 

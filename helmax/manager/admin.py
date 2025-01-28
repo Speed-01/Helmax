@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import *
 
+
+
 class CustomUserAdmin(UserAdmin):
     model = User
     list_display = ('username', 'email', 'phone', 'created_at', 'updated_at', 'referral_code', 'is_staff', 'is_superuser')
@@ -25,11 +27,24 @@ class CustomUserAdmin(UserAdmin):
 
     filter_horizontal = ('groups', 'user_permissions')
 
-admin.site.register(User, CustomUserAdmin)
-admin.site.register(Category)
-admin.site.register(Product)
-admin.site.register(Brand)
-admin.site.register(ProductImage)
-admin.site.register(Variant)
-admin.site.register(OTP)
-admin.site.register(Size)
+models_to_register = [
+    User,
+    Category,
+    Product,
+    Brand,
+    ProductImage,
+    Variant,
+    OTP,
+    Size,
+    Cart,
+    PaymentMethod,
+    CartItem,
+    Profile,
+    Order,
+    OrderItem,
+    ReturnRequest,
+    Address,
+    
+]
+for model in models_to_register:
+    admin.site.register(model)

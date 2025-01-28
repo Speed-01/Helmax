@@ -49,52 +49,64 @@
             </div>
             
             <div id="g_id_onload"
-                data-client_id="1068929040676-rne8f9llbb7uf2jg11ccnkh908mctdom.apps.googleusercontent.com"
+                data-client_id="GOOGLE_OAUTH_CLIENT_ID"
                 data-context="signin"
                 data-ux_mode="popup"
-                data-callback="handleCredentialResponse"
+                data-login_uri="http://localhost:8000/auth_receiver/"
                 data-auto_prompt="false">
             </div>
 
             <div class="g_id_signin"
                 data-type="standard"
-                data-size="large"
-                data-theme="filled_blue"
+                data-shape="pill"
+                data-theme="filled_black"
                 data-text="continue_with"
-                data-shape="rectangular"
-                data-width="300"
-                data-logo_alignment="center">
+                data-size="large"
+                data-logo_alignment="left">
             </div>
-
-            <script>
-            function handleCredentialResponse(response) {
-                fetch('/store/auth-receiver/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        credential: response.credential
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect_url;
-                    } else {
-                        console.error('Login failed:', data.error);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-            </script>
-
             <div class="signup-prompt">
                 <p>Don't have an account? <a href="{% url 'signup' %}" class="signup-link">Sign up</a></p>
             </div>
         </div>
     </div>
-
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    
+        function handleCredentialResponse(response) {
+            fetch('/store/auth-receiver/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    credential: response.credential
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    console.error('Login failed:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
     
 </div>
 {% endblock %}
